@@ -728,9 +728,8 @@ video.mirror { transform: scaleX(-1); }
   #chat-close { display: none; }
 }
 
-/* Tiny phones: drop non-essential dock items so targets stay ≥42px. */
+/* Tiny phones: trim decorative separators; every control stays. */
 @media (max-width: 420px) {
-  #pip-btn { display: none; }
   .dock-sep { display: none; }
   .readout { font-size: 0.6rem; letter-spacing: 0.05em; }
 }
@@ -748,12 +747,14 @@ video.mirror { transform: scaleX(-1); }
     /* absolute + wrap shrinks to min-content; pin the width instead */
     width: calc(100% - 1.2rem);
   }
+  /* Second row: quality steps + float button (auto basis so they share
+     the row instead of the picker claiming it alone). */
   .seg.mini {
     order: 10;
-    flex-basis: 100%;
     justify-content: center;
     grid-auto-columns: 38px; /* keep circles, don't stretch to row width */
   }
+  #pip-btn { order: 11; }
 }
 
 /* Phone landscape: trade chrome for video height. */
