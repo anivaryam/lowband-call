@@ -78,6 +78,28 @@ svg { width: 22px; height: 22px; flex: none; }
    invisible line box that shoves the whole app down ~26px. */
 svg[hidden] { display: none; }
 
+/* Scrollbars: thin instrument rail instead of the stock browser bar.
+   Standard properties cover Chromium 121+ / Firefox; the ::-webkit-* set
+   covers Safari (which still lacks scrollbar-color). */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+  /* transparent border + padding-box clip = slim floating thumb */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dim);
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-corner { background: transparent; }
+
 button { cursor: pointer; }
 
 :focus-visible {
