@@ -23,7 +23,7 @@ name, and you're in a call.
 | Chat messages | WebRTC DataChannel, peer-to-peer — never stored, never relayed |
 | Signaling (offer/answer/ICE) | Relayed over WebSocket, then discarded |
 
-The server is a ~130-line static-file + signaling relay. Nothing is persisted.
+The server is a small static-file + signaling relay. Nothing is persisted.
 
 ## How it stays fast on slow connections
 
@@ -40,7 +40,13 @@ The server is a ~130-line static-file + signaling relay. Nothing is persisted.
 5. **Mesh-aware upload budget** — group calls send a copy of your video to
    every peer, so the per-link cap is `preset ÷ peers`: total upload never
    exceeds the preset even with 3 peers connected.
-6. Live quality switcher and an on-screen total-upload readout.
+6. Live quality switcher and an on-screen up/down bitrate readout.
+7. **Camera off = zero video bytes** — the toggle uses `replaceTrack(null)`,
+   which stops the RTP stream outright (a merely *disabled* track keeps
+   shipping black keyframes). Peers show a letter avatar instead.
+8. **The app itself is ~15 KB over the wire** — brotli/gzip-compressed
+   static assets, ETag revalidation (repeat visits are 0-byte 304s), inline
+   SVG icon sprite, zero webfonts, zero CDN requests.
 
 ## Research basis
 
@@ -91,11 +97,39 @@ Browser A ◄─┤   WebRTC P2P (UDP)    ├─► Browser B
 ## Features
 
 - Group calls up to 4 people (full mesh, perfect negotiation per peer pair)
-- P2P group chat over DataChannels (broadcast to all peers)
+- P2P group chat over DataChannels (broadcast to all peers), with unread
+  badge and a bottom-sheet layout on phones
 - Camera flip (front/back) via `facingMode` + `replaceTrack` — no renegotiation
-- Picture-in-Picture ("Float") so the call survives app switching on mobile
-- Fullscreen, mute/camera toggles, live quality presets
-- Responsive: phone / tablet / desktop
+- Screen sharing (`getDisplayMedia` + `replaceTrack`, capped at 15 fps with
+  `contentHint: "detail"` so text stays sharp inside the bitrate budget);
+  peers letterbox the screen instead of cropping it; auto-reverts to camera
+  when the browser's "Stop sharing" bar is used; hidden where unsupported
+  (iOS Safari)
+- Floating call, three tiers by platform: Document PiP on desktop Chromium
+  (whole grid floats), video PiP on Android Chrome, WebKit presentation mode
+  on iOS Safari (+ `autoPictureInPicture` for system auto-float on
+  app-switch); mic/cam/hang-up exposed in the system PiP overlay via Media
+  Session video-conferencing actions; float follows to the next peer if the
+  floated one leaves
+- Fullscreen, mute/camera toggles, live quality presets (icon dock,
+  keyboard shortcuts: `m` mic, `c` camera, `f` fullscreen)
+- Invite deep links — the room rides in the URL hash (`/#room-name`),
+  share button copies it
+- Letter avatars for peers without live video (voice preset / camera off)
+- Name and preset remembered locally (`localStorage`); nothing on the server
+- Responsive: phone / tablet / desktop; respects `prefers-reduced-motion`
+
+## Security hardening
+
+- Strict CSP (`default-src 'self'`, no inline script), `X-Frame-Options: DENY`,
+  `nosniff`, `Referrer-Policy: no-referrer`, `Permissions-Policy` scoping
+  camera/mic to same origin
+- Static path traversal blocked at two layers (URL normalization + root-prefix
+  check)
+- WebSocket hardening: 128 KB max payload, per-socket token-bucket rate
+  limiting, shape-validated relay messages, room-count cap
+- Peer-supplied chat payloads are type-checked and length-capped client-side
+  (chat is P2P — the server never sees it, so the client must validate)
 
 ## Limitations
 

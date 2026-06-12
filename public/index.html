@@ -2,72 +2,218 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Peer-to-peer video calls and chat tuned for slow connections. No account, no database." />
+  <meta name="theme-color" content="#0b100d" />
   <title>Lowband Call</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>📞</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2345e6a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 13h2l2-7 3 14 3-11 2 6 2-4 2 2h4'/%3E%3C/svg%3E" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Icon sprite: inline so the app makes zero extra requests on slow links. -->
+  <svg hidden aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <symbol id="i-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 13h2l2-7 3 14 3-11 2 6 2-4 2 2h4" />
+      </symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>
+      </symbol>
+      <symbol id="i-mic-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><line x1="12" x2="12" y1="19" y2="22"/>
+      </symbol>
+      <symbol id="i-cam" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/>
+      </symbol>
+      <symbol id="i-cam-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.66 6H14a2 2 0 0 1 2 2v2.5l5.248-3.062A.5.5 0 0 1 22 7.87v8.196"/><path d="M16 16a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h2"/><line x1="2" x2="22" y1="2" y2="22"/>
+      </symbol>
+      <symbol id="i-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 19H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h5"/><path d="M13 5h7a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5"/><circle cx="12" cy="12" r="3"/><path d="m18 22-3-3 3-3"/><path d="m6 2 3 3-3 3"/>
+      </symbol>
+      <symbol id="i-pip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h4"/><rect width="10" height="7" x="12" y="13" rx="2"/>
+      </symbol>
+      <symbol id="i-screen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3"/><path d="m17 8 5-5"/><path d="M17 3h5v5"/><path d="M8 21h8"/><path d="M12 17v4"/>
+      </symbol>
+      <symbol id="i-screen-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 3H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-3"/><path d="m22 3-5 5"/><path d="m17 3 5 5"/><path d="M8 21h8"/><path d="M12 17v4"/>
+      </symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/>
+      </symbol>
+      <symbol id="i-shrink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/>
+      </symbol>
+      <symbol id="i-leave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="22" x2="2" y1="2" y2="22"/>
+      </symbol>
+      <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/><path d="m21.854 2.147-10.94 10.939"/>
+      </symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </symbol>
+      <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+      </symbol>
+      <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </symbol>
+      <!-- Signal-strength steps double as the quality presets. -->
+      <symbol id="i-sig1" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="3" y="14" width="3.2" height="6" rx="1"/><rect x="8.6" y="10" width="3.2" height="10" rx="1" opacity=".22"/><rect x="14.2" y="6" width="3.2" height="14" rx="1" opacity=".22"/><rect x="19.8" y="2" width="3.2" height="18" rx="1" opacity=".22"/>
+      </symbol>
+      <symbol id="i-sig2" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="3" y="14" width="3.2" height="6" rx="1"/><rect x="8.6" y="10" width="3.2" height="10" rx="1"/><rect x="14.2" y="6" width="3.2" height="14" rx="1" opacity=".22"/><rect x="19.8" y="2" width="3.2" height="18" rx="1" opacity=".22"/>
+      </symbol>
+      <symbol id="i-sig3" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="3" y="14" width="3.2" height="6" rx="1"/><rect x="8.6" y="10" width="3.2" height="10" rx="1"/><rect x="14.2" y="6" width="3.2" height="14" rx="1"/><rect x="19.8" y="2" width="3.2" height="18" rx="1" opacity=".22"/>
+      </symbol>
+      <symbol id="i-sig4" viewBox="0 0 24 24" fill="currentColor">
+        <rect x="3" y="14" width="3.2" height="6" rx="1"/><rect x="8.6" y="10" width="3.2" height="10" rx="1"/><rect x="14.2" y="6" width="3.2" height="14" rx="1"/><rect x="19.8" y="2" width="3.2" height="18" rx="1"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <noscript><p class="noscript">Lowband Call needs JavaScript for WebRTC.</p></noscript>
+
   <!-- Join screen -->
   <div id="join-screen" class="screen">
     <div class="join-card">
-      <h1>Lowband Call</h1>
-      <p class="tagline">Peer-to-peer video &amp; chat. No database, no account. Tuned for slow connections.</p>
+      <div class="brand">
+        <svg class="brand-mark" aria-hidden="true"><use href="#i-logo"/></svg>
+        <h1>LOWBAND</h1>
+        <span class="model-no" aria-hidden="true">LB&#8209;01</span>
+      </div>
+      <p class="tagline">Peer-to-peer video &amp; chat for thin connections. No account. No database. Media never touches a server.</p>
+      <div class="readout" aria-hidden="true">
+        <span class="dot ok"></span>MESH P2P&nbsp;&nbsp;·&nbsp;&nbsp;DTLS-SRTP&nbsp;&nbsp;·&nbsp;&nbsp;ZERO STORAGE
+      </div>
       <form id="join-form">
-        <input id="name-input" type="text" placeholder="Your name" maxlength="32" autocomplete="off" required />
-        <input id="room-input" type="text" placeholder="Room name (share it with your peer)" maxlength="64" autocomplete="off" required />
-        <select id="quality-select" title="Connection quality preset">
-          <option value="low" selected>Low bandwidth (~250 kbps, 270p)</option>
-          <option value="audio">Audio only (~50 kbps)</option>
-          <option value="medium">Medium (~500 kbps, 360p)</option>
-          <option value="high">High (~1.2 Mbps, 720p)</option>
-        </select>
-        <button type="submit">Join room</button>
+        <div class="field">
+          <label for="name-input">Callsign</label>
+          <input id="name-input" type="text" placeholder="Your name" maxlength="32" autocomplete="name" required />
+        </div>
+        <div class="field">
+          <label for="room-input">Channel</label>
+          <input id="room-input" type="text" placeholder="Room name — share it to be joined" maxlength="64" autocomplete="off" required />
+        </div>
+        <fieldset class="quality" role="radiogroup" aria-label="Bandwidth preset">
+          <legend>Uplink budget</legend>
+          <div class="seg" id="join-quality">
+            <input type="radio" name="qjoin" id="qj-audio" value="audio" />
+            <label for="qj-audio" title="Audio only, ~50 kbps">
+              <svg aria-hidden="true"><use href="#i-sig1"/></svg><b>VOICE</b><i>50k</i>
+            </label>
+            <input type="radio" name="qjoin" id="qj-low" value="low" checked />
+            <label for="qj-low" title="270p video, ~250 kbps total">
+              <svg aria-hidden="true"><use href="#i-sig2"/></svg><b>ECO</b><i>250k</i>
+            </label>
+            <input type="radio" name="qjoin" id="qj-medium" value="medium" />
+            <label for="qj-medium" title="360p video, ~500 kbps total">
+              <svg aria-hidden="true"><use href="#i-sig3"/></svg><b>STD</b><i>500k</i>
+            </label>
+            <input type="radio" name="qjoin" id="qj-high" value="high" />
+            <label for="qj-high" title="720p video, ~1.2 Mbps total">
+              <svg aria-hidden="true"><use href="#i-sig4"/></svg><b>HD</b><i>1.2M</i>
+            </label>
+          </div>
+        </fieldset>
+        <button type="submit" class="join-btn">ENTER CHANNEL</button>
       </form>
-      <p id="join-error" class="error" hidden></p>
+      <p id="join-error" class="error" role="alert" hidden></p>
     </div>
   </div>
 
   <!-- Call screen -->
   <div id="call-screen" class="screen" hidden>
+    <header class="topbar">
+      <span class="room-chip"><svg aria-hidden="true"><use href="#i-logo"/></svg><span id="room-label"></span></span>
+      <button id="share-btn" class="icon-btn ghost" title="Copy invite link" aria-label="Copy invite link">
+        <svg aria-hidden="true"><use href="#i-share"/></svg>
+      </button>
+      <span class="grow"></span>
+      <span class="conn"><span id="conn-dot" class="dot wait"></span><span id="conn-state">connecting…</span></span>
+      <span id="stats" class="stats" title="Live video bitrate: up / down" aria-label="Live video bitrate"></span>
+    </header>
+
     <main class="call-main">
       <div class="videos" id="videos">
-        <button id="fs-btn" class="fs-btn" title="Full screen">⛶</button>
+        <button id="fs-btn" class="icon-btn ghost fs-btn" title="Full screen" aria-label="Full screen">
+          <svg aria-hidden="true"><use id="fs-icon" href="#i-expand"/></svg>
+        </button>
         <div class="video-grid" id="video-grid">
-          <div class="video-tile placeholder" id="waiting-tile"><span>Waiting for others…</span></div>
+          <div class="video-tile placeholder" id="waiting-tile">
+            <svg class="ph-icon" aria-hidden="true"><use href="#i-users"/></svg>
+            <span>AWAITING PEERS</span>
+            <span class="ph-sub">share the channel name or invite link</span>
+          </div>
         </div>
-        <div class="video-tile local-tile">
+        <div class="video-tile local-tile" id="local-tile">
           <video id="local-video" autoplay playsinline muted></video>
           <span class="tile-label" id="local-label">You</span>
         </div>
-      </div>
-      <div class="controls">
-        <button id="mic-btn" title="Toggle microphone">Mic on</button>
-        <button id="cam-btn" title="Toggle camera">Cam on</button>
-        <button id="flip-btn" title="Switch front/back camera">Flip</button>
-        <button id="pip-btn" title="Float their video over other apps">Float</button>
-        <select id="live-quality">
-          <option value="audio">Audio only</option>
-          <option value="low" selected>Low ~250k</option>
-          <option value="medium">Med ~500k</option>
-          <option value="high">High ~1.2M</option>
-        </select>
-        <span id="stats" class="stats" title="Outbound video bitrate"></span>
-        <button id="leave-btn" class="danger" title="Leave room">Leave</button>
-      </div>
-    </main>
 
-    <aside class="chat">
-      <div class="chat-header">
-        <span id="room-label"></span>
-        <span id="conn-state" class="conn-state">connecting…</span>
+        <div class="dock" role="toolbar" aria-label="Call controls">
+          <button id="mic-btn" class="icon-btn" title="Mute microphone (m)" aria-label="Mute microphone" aria-pressed="false">
+            <svg aria-hidden="true"><use id="mic-icon" href="#i-mic"/></svg>
+          </button>
+          <button id="cam-btn" class="icon-btn" title="Turn camera off (c)" aria-label="Turn camera off" aria-pressed="false">
+            <svg aria-hidden="true"><use id="cam-icon" href="#i-cam"/></svg>
+          </button>
+          <button id="flip-btn" class="icon-btn" title="Switch camera" aria-label="Switch front and back camera">
+            <svg aria-hidden="true"><use href="#i-flip"/></svg>
+          </button>
+          <button id="screen-btn" class="icon-btn" title="Share screen (s)" aria-label="Share screen" aria-pressed="false">
+            <svg aria-hidden="true"><use id="screen-icon" href="#i-screen"/></svg>
+          </button>
+          <button id="pip-btn" class="icon-btn" title="Float their video" aria-label="Float their video over other apps" aria-pressed="false">
+            <svg aria-hidden="true"><use href="#i-pip"/></svg>
+          </button>
+          <span class="dock-sep" aria-hidden="true"></span>
+          <div class="seg mini" id="live-quality" role="radiogroup" aria-label="Bandwidth preset">
+            <input type="radio" name="qlive" id="ql-audio" value="audio" />
+            <label for="ql-audio" title="Audio only ~50 kbps" aria-label="Audio only"><svg aria-hidden="true"><use href="#i-sig1"/></svg></label>
+            <input type="radio" name="qlive" id="ql-low" value="low" checked />
+            <label for="ql-low" title="Eco 270p ~250 kbps" aria-label="Eco quality"><svg aria-hidden="true"><use href="#i-sig2"/></svg></label>
+            <input type="radio" name="qlive" id="ql-medium" value="medium" />
+            <label for="ql-medium" title="Standard 360p ~500 kbps" aria-label="Standard quality"><svg aria-hidden="true"><use href="#i-sig3"/></svg></label>
+            <input type="radio" name="qlive" id="ql-high" value="high" />
+            <label for="ql-high" title="High 720p ~1.2 Mbps" aria-label="High quality"><svg aria-hidden="true"><use href="#i-sig4"/></svg></label>
+          </div>
+          <span class="dock-sep" aria-hidden="true"></span>
+          <button id="chat-btn" class="icon-btn" title="Toggle chat" aria-label="Toggle chat">
+            <svg aria-hidden="true"><use href="#i-chat"/></svg>
+            <span id="chat-badge" class="badge" hidden></span>
+          </button>
+          <button id="leave-btn" class="icon-btn danger" title="Leave channel" aria-label="Leave channel">
+            <svg aria-hidden="true"><use href="#i-leave"/></svg>
+          </button>
+        </div>
       </div>
-      <div id="messages" class="messages"></div>
-      <form id="chat-form">
-        <input id="chat-input" type="text" placeholder="Type a message…" maxlength="2000" autocomplete="off" />
-        <button type="submit">Send</button>
-      </form>
-    </aside>
+
+      <aside class="chat" id="chat-panel" aria-label="Chat">
+        <div class="chat-header">
+          <span class="chat-title">TRAFFIC</span>
+          <span id="chat-conn" class="chat-sub"></span>
+          <button id="chat-close" class="icon-btn ghost" title="Close chat" aria-label="Close chat">
+            <svg aria-hidden="true"><use href="#i-x"/></svg>
+          </button>
+        </div>
+        <div id="messages" class="messages" role="log" aria-live="polite"></div>
+        <form id="chat-form">
+          <input id="chat-input" type="text" placeholder="Message — peer-to-peer, never stored" maxlength="2000" autocomplete="off" aria-label="Chat message" />
+          <button type="submit" class="icon-btn send" title="Send" aria-label="Send message">
+            <svg aria-hidden="true"><use href="#i-send"/></svg>
+          </button>
+        </form>
+      </aside>
+    </main>
   </div>
 
   <script src="app.js"></script>

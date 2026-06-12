@@ -1,7 +1,7 @@
 // Smoke test for the signaling server. Not shipped to clients.
 const WebSocket = require("ws");
 
-const URL = "ws://localhost:3000/ws";
+const URL = process.env.WS_URL || "ws://localhost:3000/ws";
 const failures = [];
 
 function client() {
