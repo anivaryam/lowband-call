@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lowband Call</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='80' font-size='80'>📞</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Join screen -->
+  <div id="join-screen" class="screen">
+    <div class="join-card">
+      <h1>Lowband Call</h1>
+      <p class="tagline">Peer-to-peer video &amp; chat. No database, no account. Tuned for slow connections.</p>
+      <form id="join-form">
+        <input id="name-input" type="text" placeholder="Your name" maxlength="32" autocomplete="off" required />
+        <input id="room-input" type="text" placeholder="Room name (share it with your peer)" maxlength="64" autocomplete="off" required />
+        <select id="quality-select" title="Connection quality preset">
+          <option value="low" selected>Low bandwidth (~250 kbps, 270p)</option>
+          <option value="audio">Audio only (~50 kbps)</option>
+          <option value="medium">Medium (~500 kbps, 360p)</option>
+          <option value="high">High (~1.2 Mbps, 720p)</option>
+        </select>
+        <button type="submit">Join room</button>
+      </form>
+      <p id="join-error" class="error" hidden></p>
+    </div>
+  </div>
+
+  <!-- Call screen -->
+  <div id="call-screen" class="screen" hidden>
+    <main class="call-main">
+      <div class="videos" id="videos">
+        <button id="fs-btn" class="fs-btn" title="Full screen">⛶</button>
+        <div class="video-grid" id="video-grid">
+          <div class="video-tile placeholder" id="waiting-tile"><span>Waiting for others…</span></div>
+        </div>
+        <div class="video-tile local-tile">
+          <video id="local-video" autoplay playsinline muted></video>
+          <span class="tile-label" id="local-label">You</span>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="mic-btn" title="Toggle microphone">Mic on</button>
+        <button id="cam-btn" title="Toggle camera">Cam on</button>
+        <button id="flip-btn" title="Switch front/back camera">Flip</button>
+        <button id="pip-btn" title="Float their video over other apps">Float</button>
+        <select id="live-quality">
+          <option value="audio">Audio only</option>
+          <option value="low" selected>Low ~250k</option>
+          <option value="medium">Med ~500k</option>
+          <option value="high">High ~1.2M</option>
+        </select>
+        <span id="stats" class="stats" title="Outbound video bitrate"></span>
+        <button id="leave-btn" class="danger" title="Leave room">Leave</button>
+      </div>
+    </main>
+
+    <aside class="chat">
+      <div class="chat-header">
+        <span id="room-label"></span>
+        <span id="conn-state" class="conn-state">connecting…</span>
+      </div>
+      <div id="messages" class="messages"></div>
+      <form id="chat-form">
+        <input id="chat-input" type="text" placeholder="Type a message…" maxlength="2000" autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </aside>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

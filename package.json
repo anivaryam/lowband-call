@@ -1,0 +1,16 @@
+{
+  "name": "lowband-call",
+  "version": "1.0.0",
+  "description": "Database-free messenger with P2P video calls tuned for low-bandwidth connections",
+  "main": "server.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
