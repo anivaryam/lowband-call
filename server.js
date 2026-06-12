@@ -34,8 +34,12 @@ const SECURITY_HEADERS = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "no-referrer",
+  // display-capture MUST be (self): () denies getDisplayMedia and silently
+  // kills screen sharing on deployments. picture-in-picture listed
+  // explicitly so a proxy can't narrow the default.
   "Permissions-Policy":
-    "camera=(self), microphone=(self), display-capture=(), geolocation=(), payment=()",
+    "camera=(self), microphone=(self), display-capture=(self), " +
+    "picture-in-picture=(self), geolocation=(), payment=()",
 };
 
 // Static cache: tiny files, compressed once per mtime. On slow links the

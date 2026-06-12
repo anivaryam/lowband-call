@@ -881,13 +881,27 @@ $("pip-btn").addEventListener("click", async () => {
   try {
     if (state.docPip) {
       state.docPip.close();
-    } else if (document.pictureInPictureElement) {
-      await document.exitPictureInPicture();
-    } else if (window.documentPictureInPicture) {
-      await enterDocPip();
-    } else {
-      await enterPip();
+      return;
     }
+    if (document.pictureInPictureElement) {
+      return document.exitPictureInPicture();
+    }
+    // iOS Safari never sets pictureInPictureElement — unfloat via webkit.
+    const v = firstRemoteVideo();
+    if (v?.webkitPresentationMode === "picture-in-picture") {
+      return v.webkitSetPresentationMode("inline");
+    }
+    // Mobile Chromium exposes documentPictureInPicture but rejects
+    // requestWindow (the API is desktop-only) — fall back to video PiP
+    // instead of dying inside the doc-PiP attempt.
+    if (window.documentPictureInPicture) {
+      try {
+        return await enterDocPip();
+      } catch {
+        /* fall through to video PiP */
+      }
+    }
+    await enterPip();
   } catch {
     addSystemMessage("Floating video needs an active peer video first.");
   }
